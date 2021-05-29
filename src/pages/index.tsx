@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <Layout>
       <Head>
-        <title>Recall.it</title>
+        <title>recall.it</title>
       </Head>
 
       <CardList />
