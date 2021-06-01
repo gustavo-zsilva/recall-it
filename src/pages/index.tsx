@@ -1,25 +1,60 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Header } from '../components/Header';
-import { CardList } from '../components/CardList';
-import { FiPlus } from 'react-icons/fi';
-import { Box, Flex, Text, Divider, Tag, Button } from '@chakra-ui/react';
+import Head from 'next/head';
+import { GetServerSideProps } from 'next';
+
+import { NotesProvider } from '../contexts/NotesContext';
+import { ModalProvider } from '../contexts/ModalContext';
+
+import { AddNoteButton } from '../components/AddNoteButton';
+import { NoteList } from '../components/NoteList';
 import { Layout } from '../components/Layout';
+import { AddNoteModal } from '../components/AddNoteModal';
 
-export default function Home() {
+import axios from 'axios';
+
+interface HomeProps {
+  notes: [],
+}
+
+export default function Home({ notes }: HomeProps) {
   return (
-    <Layout>
-      <Head>
-        <title>recall.it</title>
-      </Head>
+    <NotesProvider firestoreNotes={notes}>
+      <ModalProvider>
+        <Layout>
+          <Head>
+            <title>recall.it</title>
+          </Head>
 
-      <CardList />
+          <NoteList />
 
-      <Flex pos="absolute" bottom="4rem" right={0}>
-        <Button borderRadius="50%" w="3.8rem" h="3.8rem" bg="cyan.700" _hover={{ bg: "cyan.600" }} boxShadow="0 0 6px 6px #00000012">
-          <FiPlus size={32} color="#FFF" />
-        </Button>
-      </Flex>
-    </Layout>
+          <AddNoteModal />
+
+          <AddNoteButton />
+        </Layout>
+      </ModalProvider>
+    </NotesProvider>
   ) 
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+
+  const { token, uid } = req.cookies;
+
+  if (token == null) {
+    return {
+      redirect: {
+        statusCode: 302,
+        destination: '/signup',
+        permanent: false,
+      }
+    }
+  }
+
+  const response = await axios.get('http://localhost:3000/api/notes', { params: { uid } });
+  const notes = response.data;
+
+  return {
+    props: {
+      notes,
+    }
+  }
 }

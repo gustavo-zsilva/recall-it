@@ -25,7 +25,7 @@ export default function Login() {
     if (!emailRef.current.value || !passwordRef.current.value) return;
 
     try {
-      const userCredential = await loginWithEmail(emailRef.current.value, passwordRef.current);
+      const userCredential = await loginWithEmail(emailRef.current.value, passwordRef.current.value);
 
       toast({
         title: "You are now logged in!",

@@ -19,14 +19,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             break;
         case 'POST':
             try {
-                 await firestore
+                await firestore
                     .collection('users')
-                    .doc(req.body.uid)
+                    .doc(req.body.data.uid)
                     .set(req.body.data)
 
                 res.status(200).json({ message: 'Account created with success' });
             } catch (err) {
-                console.log(req.body)
                 res.status(500).json({ message: err.message });
             }
             
