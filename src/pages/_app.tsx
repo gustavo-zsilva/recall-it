@@ -11,7 +11,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       <AuthProvider>
         <Component {...pageProps} />
       </AuthProvider>
-    // </ChakraProvider>
+    </ChakraProvider>
   )
 }
+
 export default MyApp

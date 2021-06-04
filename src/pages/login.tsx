@@ -4,10 +4,12 @@ import Image from 'next/image';
 import { FormEvent, useRef } from 'react';
 
 import { FiUser, FiKey } from 'react-icons/fi';
-import { AiFillGoogleCircle, AiFillFacebook, AiFillTwitterCircle, AiFillGithub } from 'react-icons/ai';
 
 import { Layout } from '../components/Layout';
 import { useAuth } from '../contexts/AuthContext';
+import { ProviderButtons } from '../components/ProviderButtons';
+
+import { useForm } from 'react-hook-form';
 
 import { Flex, Heading, Input, InputGroup, InputLeftElement, Button, Stack, Divider, useToast, toast } from '@chakra-ui/react';
 
@@ -25,7 +27,7 @@ export default function Login() {
     if (!emailRef.current.value || !passwordRef.current.value) return;
 
     try {
-      const userCredential = await loginWithEmail(emailRef.current.value, passwordRef.current.value);
+      await loginWithEmail(emailRef.current.value, passwordRef.current.value);
 
       toast({
         title: "You are now logged in!",
@@ -86,20 +88,7 @@ export default function Login() {
 
             <Divider m="2rem 0" />
 
-            <Flex justifyContent="space-between">
-              <Button p={7} display="flex" bg="#E94235" _hover={{ bg: "#ca382d" }}>
-                <AiFillGoogleCircle size={32} color="#FFF"/>
-              </Button>
-              <Button p={7} colorScheme="facebook">
-                <AiFillFacebook size={32} />
-              </Button>
-              <Button p={7} colorScheme="twitter">
-                <AiFillTwitterCircle size={32} />
-              </Button>
-              <Button p={7} bg="#2D3748" _hover={{ bg: "#1d2430" }}>
-                <AiFillGithub size={32} color="#FFF" />
-              </Button>
-            </Flex>
+            <ProviderButtons />
           </Flex>
         </form>
 

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-import { FiUser } from 'react-icons/fi';
+import { FiUser, FiLogOut } from 'react-icons/fi';
 
 import {
     Flex,
@@ -9,6 +9,8 @@ import {
     Text,
     Button,
     ButtonGroup,
+    SkeletonText,
+    SkeletonCircle,
     Menu,
     MenuButton,
     MenuList,
@@ -18,8 +20,15 @@ import { useAuth } from '../contexts/AuthContext';
 
 export function Header() {
 
-    const { user, isAuthenticated, isUserLoading } = useAuth();
-    console.log(user)
+    const { user, isAuthenticated, isUserLoading, signOut } = useAuth();
+    
+    async function handleSignOut() {
+        try {
+            await signOut();
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     return (
         <Flex p={4} mb="1rem" justifyContent="space-between" alignItems="center">
@@ -35,24 +44,31 @@ export function Header() {
                     <MenuButton _hover={{ bg: 'gray.100' }} as={Button} bg="gray.50" borderRadius="2rem">
                         <Flex alignItems="center" gridGap="1rem">
                             {user.photoUrl ? (
-                                <Image
-                                    width={50}
-                                    height={50}
-                                    src={user.photoUrl}
-                                    alt="User Photo"
-                                />
+                                <SkeletonCircle isLoaded={isUserLoading}>
+                                    <Flex borderRadius="50%" w="2rem" h="2rem" overflow="hidden">
+                                        <Image
+                                            width={50}
+                                            height={50}
+                                            src={user.photoUrl}
+                                            alt="User Photo"
+                                            objectFit="cover"
+                                        />
+                                    </Flex>
+                                </SkeletonCircle>
                             ) : (
                                 <FiUser size={28} />
                             )}
-
-                            <Text fontWeight="medium">
-                                {user.name || user.email}
-                            </Text>
+                            <SkeletonText noOfLines={1} isLoaded={isUserLoading}>
+                                <Text fontWeight="medium">
+                                    {user.name ?? user.email}
+                                </Text>
+                            </SkeletonText>
                         </Flex>
                     </MenuButton>
                     <MenuList>
-                        <MenuItem>Profile</MenuItem>
-                        <MenuItem>Cards</MenuItem>
+                        <MenuItem icon={<FiUser size={32} />}>Profile</MenuItem>
+                        <MenuItem icon={<FiLogOut />} onClick={handleSignOut}>Logout</MenuItem>
+
                     </MenuList>
                 </Menu>
             ) : (

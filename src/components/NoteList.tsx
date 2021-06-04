@@ -7,6 +7,8 @@ export function NoteList() {
 
     return (
         <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gridGap="2rem">
+            {notes.length === 0 && <Text>You don't have any notes yet.</Text>}
+
             {notes.map(note => {
                 return (
                     <Flex key={note.title} flexDir="column" borderRadius={4} p={4} bg="gray.700" color="#FFF" cursor="pointer">

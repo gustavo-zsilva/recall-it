@@ -9,7 +9,8 @@ import { NoteList } from '../components/NoteList';
 import { Layout } from '../components/Layout';
 import { AddNoteModal } from '../components/AddNoteModal';
 
-import axios from 'axios';
+import { parseCookies } from 'nookies';
+import { getAPIClient } from '../services/axios';
 
 interface HomeProps {
   notes: [],
@@ -35,21 +36,21 @@ export default function Home({ notes }: HomeProps) {
   ) 
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
-  const { token, uid } = req.cookies;
-
-  if (token == null) {
+  const apiClient = getAPIClient(ctx);
+  const { ['nextauth.token']: token } = parseCookies(ctx);
+  
+  if (token === 'null') {
     return {
       redirect: {
-        statusCode: 302,
         destination: '/signup',
         permanent: false,
       }
     }
   }
 
-  const response = await axios.get('http://localhost:3000/api/notes', { params: { uid } });
+  const response = await apiClient.get('/notes');
   const notes = response.data;
 
   return {

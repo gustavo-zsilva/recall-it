@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import Cookie from 'js-cookie';
+import { setCookie } from 'nookies';
+import Router from 'next/router';
 import firebase, { auth } from '../lib/firebase';
 import { formatUser } from '../utils/formatUser';
 
@@ -20,6 +21,7 @@ interface AuthContextProps {
     signUpWithEmail: (email: string, password: string) => Promise<firebase.auth.UserCredential>,
     loginWithEmail: (email: string, password: string) => Promise<firebase.auth.UserCredential>,
     signInWithGoogle: () => Promise<firebase.auth.UserCredential>,
+    signOut: () => Promise<void>,
 }
 
 interface AuthProviderProps {
@@ -29,8 +31,8 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
 
     const [user, setUser] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isUserLoading, setIsUserLoading] = useState(false);
+    const isAuthenticated = !!user;
 
     function signUpWithEmail(email: string, password: string) {
         return auth.createUserWithEmailAndPassword(email, password);
@@ -45,6 +47,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return auth.signInWithPopup(provider);
     }
 
+    function signOut() {
+        return auth.signOut();
+    }
+
     useEffect(() => {
         const authUnsubscribe = auth.onAuthStateChanged(user => {
             setIsUserLoading(true);
@@ -52,13 +58,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
             if (user) {
                 const formattedUser = formatUser(user);
                 setUser(formattedUser);
-                setIsAuthenticated(true);
                 setIsUserLoading(false);
                 return;
             }
 
             setUser(null);
-            setIsAuthenticated(false);
             setIsUserLoading(false);
         })
 
@@ -67,13 +71,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             if (user) {
                 const token = await user.getIdToken();
-                Cookie.set('token', token);
-                Cookie.set('uid', user.uid);
+                setCookie(null, 'nextauth.token', token)
+                setCookie(null, 'nextauth.uid', user.uid)
+                Router.push('/')
+
                 return;
             }
 
-            Cookie.set('token', null);
-            Cookie.set('uid', null);
+            setCookie(null, 'nextauth.token', null)
+            setCookie(null, 'nextauth.uid', null)
         })
 
         return () => {
@@ -91,6 +97,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 signUpWithEmail,
                 loginWithEmail,
                 signInWithGoogle,
+                signOut,
             }}
         >
             {children}
