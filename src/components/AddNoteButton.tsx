@@ -7,8 +7,8 @@ export function AddNoteButton() {
     const { handleOpenModal } = useModal();
 
     return (
-        <Flex pos="absolute" bottom="4rem" right={0}>
-            <Button 
+        <Flex pos="fixed" bottom="4rem" alignSelf="flex-end">
+            <Button
                 borderRadius="50%"
                 w="3.8rem"
                 h="3.8rem"

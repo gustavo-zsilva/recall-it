@@ -9,7 +9,7 @@ export function getAPIClient(ctx?: any) {
     })
 
     api.interceptors.request.use(config => {
-        config.headers['Authorization'] = token
+        config.headers['Authorization'] = token || null
         config.params = { uid }
 
         return config

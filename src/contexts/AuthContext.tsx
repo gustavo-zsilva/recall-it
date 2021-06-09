@@ -71,13 +71,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             if (user) {
                 const token = await user.getIdToken();
-                setCookie(null, 'nextauth.token', token)
-                setCookie(null, 'nextauth.uid', user.uid)
-                Router.push('/')
-
+                setCookie(null, 'nextauth.token', token, { encode: value => value })
+                setCookie(null, 'nextauth.uid', user.uid, { encode: value => value })
                 return;
             }
 
+            Router.push('/login')
             setCookie(null, 'nextauth.token', null)
             setCookie(null, 'nextauth.uid', null)
         })

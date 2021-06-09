@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import { FiUser, FiLogOut } from 'react-icons/fi';
+import { AiOutlineReload } from 'react-icons/ai';
 
 import {
     Flex,
@@ -15,12 +16,15 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
+    MenuDivider,
 } from '@chakra-ui/react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotes } from '../contexts/NotesContext';
 
 export function Header() {
 
     const { user, isAuthenticated, isUserLoading, signOut } = useAuth();
+    const { reloadNotes } = useNotes()
     
     async function handleSignOut() {
         try {
@@ -31,7 +35,7 @@ export function Header() {
     }
 
     return (
-        <Flex p={4} mb="1rem" justifyContent="space-between" alignItems="center">
+        <Flex p="1rem 0" mb="1rem" justifyContent="space-between" alignItems="center">
             <Link href="/">
                 <Heading display="flex" color="gray.700" cursor="pointer">
                     recall
@@ -44,7 +48,7 @@ export function Header() {
                     <MenuButton _hover={{ bg: 'gray.100' }} as={Button} bg="gray.50" borderRadius="2rem">
                         <Flex alignItems="center" gridGap="1rem">
                             {user.photoUrl ? (
-                                <SkeletonCircle isLoaded={isUserLoading}>
+                                // <SkeletonCircle isLoaded={isUserLoading}>
                                     <Flex borderRadius="50%" w="2rem" h="2rem" overflow="hidden">
                                         <Image
                                             width={50}
@@ -54,21 +58,22 @@ export function Header() {
                                             objectFit="cover"
                                         />
                                     </Flex>
-                                </SkeletonCircle>
+                                // </SkeletonCircle>
                             ) : (
                                 <FiUser size={28} />
                             )}
-                            <SkeletonText noOfLines={1} isLoaded={isUserLoading}>
+                            {/* <SkeletonText noOfLines={1} isLoaded={isUserLoading}> */}
                                 <Text fontWeight="medium">
                                     {user.name ?? user.email}
                                 </Text>
-                            </SkeletonText>
+                            {/* </SkeletonText> */}
                         </Flex>
                     </MenuButton>
                     <MenuList>
-                        <MenuItem icon={<FiUser size={32} />}>Profile</MenuItem>
-                        <MenuItem icon={<FiLogOut />} onClick={handleSignOut}>Logout</MenuItem>
-
+                        <MenuItem icon={<FiUser size={20} />}>Profile</MenuItem>
+                        <MenuItem icon={<FiLogOut size={20} />} onClick={handleSignOut}>Logout</MenuItem>
+                        <MenuDivider />
+                        <MenuItem icon={<AiOutlineReload size={20} />} onClick={reloadNotes}>Reload Notes</MenuItem>
                     </MenuList>
                 </Menu>
             ) : (

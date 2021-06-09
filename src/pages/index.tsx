@@ -12,8 +12,13 @@ import { AddNoteModal } from '../components/AddNoteModal';
 import { parseCookies } from 'nookies';
 import { getAPIClient } from '../services/axios';
 
+type Note = {
+  question: string,
+  content: string,
+}
+
 interface HomeProps {
-  notes: [],
+  notes: Note[],
 }
 
 export default function Home({ notes }: HomeProps) {
@@ -28,8 +33,6 @@ export default function Home({ notes }: HomeProps) {
           <NoteList />
 
           <AddNoteModal />
-
-          <AddNoteButton />
         </Layout>
       </ModalProvider>
     </NotesProvider>

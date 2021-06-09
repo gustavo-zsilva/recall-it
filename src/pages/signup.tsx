@@ -1,16 +1,17 @@
 import Head from 'next/head';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-import { FormEvent, useRef } from 'react';
-
-import axios from 'axios';
+import { api } from '../services/api';
 
 import { FiUser, FiKey } from 'react-icons/fi';
 
 import { Layout } from '../components/Layout';
 import { ProviderButtons } from '../components/ProviderButtons';
 import { useAuth } from '../contexts/AuthContext';
+
+import { useForm } from 'react-hook-form';
 
 import {
   Flex,
@@ -24,23 +25,23 @@ import {
   useToast,
 } from '@chakra-ui/react';
 
+type SignupType = {
+  email: string,
+  username: string,
+  password: string,
+  passwordConfirm: string,
+}
+
 export default function Signup() {
 
   const { signUpWithEmail, signInWithGoogle, isUserLoading } = useAuth();
   const toast = useToast();
   const router = useRouter();
+  const { register, handleSubmit, reset } = useForm();
 
-  const emailRef = useRef<HTMLInputElement>(null);
-  const usernameRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const passwordConfirmRef = useRef<HTMLInputElement>(null);
+  async function handleSignup({ email, username, password, passwordConfirm }: SignupType) {
 
-  async function handleSignup(event: FormEvent) {
-    event.preventDefault();
-
-    if (!emailRef.current.value || !passwordRef.current.value || !usernameRef.current.value) return;
-
-    if (passwordRef.current.value !== passwordConfirmRef.current.value) {
+    if (password !== passwordConfirm) {
       return toast({
         title: "Your passwords are not matching.",
         description: "Check and try again.",
@@ -52,18 +53,18 @@ export default function Signup() {
     }
 
     try {
-      const userCredential = await signUpWithEmail(emailRef.current.value, passwordRef.current.value);
+      const userCredential = await signUpWithEmail(email, password);
 
-      const { data } = await axios.post('http://localhost:3000/api/user',{
+      const { data } = await api.post('http://localhost:3000/api/user', {
         data: {
-          name: usernameRef.current.value,
+          name: username,
           email: userCredential.user.email,
           uid: userCredential.user.uid,
         }
       })
       
       toast({
-        title: `Welcome, ${usernameRef.current.value}!`,
+        title: `Welcome, ${username}!`,
         description: data.message,
         status: "success",
         position: "top",
@@ -86,7 +87,6 @@ export default function Signup() {
       })
     }
   }
-
   
 
   return (
@@ -97,51 +97,56 @@ export default function Signup() {
 
       <Flex gridGap="4rem" m="0 auto">
 
-        <form onSubmit={handleSignup}>
+        <form onSubmit={handleSubmit(handleSignup)}>
           <Flex flexDir="column" w="25rem">
             <Heading fontFamily="Inter" mb="2rem">signup</Heading>
             <Stack spacing="2rem">
               <InputGroup>
                 <InputLeftElement children={<FiUser size={24} color="#B1B0C1" />} />
                 <Input
+                  {...register("email")}
                   variant="flushed"
                   placeholder="Your email"
                   type="email"
                   isRequired
-                  ref={emailRef}
                 />
               </InputGroup>
               <InputGroup>
                 <InputLeftElement children={<FiUser size={24} color="#B1B0C1" />} />
                 <Input
+                  {...register("username")}
                   variant="flushed"
                   placeholder="Your username"
                   type="text"
                   isRequired
-                  ref={usernameRef}
                 />
               </InputGroup>
               <InputGroup>
                 <InputLeftElement children={<FiKey size={24} color="#B1B0C1" />} />
                 <Input
+                  {...register("password")}
                   variant="flushed"
                   placeholder="Your password"
                   type="password"
                   isRequired
-                  ref={passwordRef}
                 />
               </InputGroup>
               <InputGroup>
                 <InputLeftElement children={<FiKey size={24} color="#B1B0C1" />} />
                 <Input
+                  {...register("passwordConfirm")}
                   variant="flushed"
                   placeholder="Confirm your password"
                   type="password"
                   isRequired
-                  ref={passwordConfirmRef}
                 />
               </InputGroup>
               <Button bg="cyan.600" color="#FFF" _hover={{ bg: "cyan.700" }} type="submit">Signup</Button>
+              <Link href="/login">
+                <Button w="fit-content" variant="link" fontWeight="light" color="cyan.600" _hover={{ color: "cyan.700", textDecor: "underline 2px" }}>
+                  Already have an account? Login
+                </Button>
+              </Link>
             </Stack>
 
             <Divider m="2rem 0" />

@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import Image from 'next/image';
-
-import { FormEvent, useRef } from 'react';
+import Link from 'next/link';
 
 import { FiUser, FiKey } from 'react-icons/fi';
 
@@ -13,21 +12,21 @@ import { useForm } from 'react-hook-form';
 
 import { Flex, Heading, Input, InputGroup, InputLeftElement, Button, Stack, Divider, useToast, toast } from '@chakra-ui/react';
 
+type LoginType = {
+  email: string,
+  password: string,
+}
+
 export default function Login() {
 
   const { loginWithEmail } = useAuth();
+  const { register, handleSubmit, reset } = useForm();
   const toast = useToast();
 
-  const emailRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-
-  async function handleLogin(event: FormEvent) {
-    event.preventDefault();
-
-    if (!emailRef.current.value || !passwordRef.current.value) return;
+  async function handleLogin(data: LoginType) {
 
     try {
-      await loginWithEmail(emailRef.current.value, passwordRef.current.value);
+      await loginWithEmail(data.email, data.password);
 
       toast({
         title: "You are now logged in!",
@@ -37,6 +36,8 @@ export default function Login() {
         duration: 6000,
         isClosable: true,
       })
+
+      reset()
     } catch (err) {
       console.error(err);
 
@@ -59,31 +60,36 @@ export default function Login() {
 
       <Flex gridGap="4rem" m="0 auto">
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSubmit(handleLogin)}>
           <Flex flexDir="column" w="25rem">
             <Heading fontFamily="Inter" mb="2rem">login</Heading>
             <Stack spacing="2rem">
               <InputGroup>
                 <InputLeftElement children={<FiUser size={24} color="#B1B0C1" />} />
                 <Input
+                  {...register("email")}
                   variant="flushed"
-                  placeholder="Your email or username"
+                  placeholder="Your email"
                   type="text"
                   isRequired
-                  ref={emailRef}
                 />
               </InputGroup>
               <InputGroup>
                 <InputLeftElement children={<FiKey size={24} color="#B1B0C1" />} />
                 <Input
+                  {...register("password")}
                   variant="flushed"
                   placeholder="Your password"
                   type="password"
                   isRequired
-                  ref={passwordRef}
                 />
               </InputGroup>
               <Button bg="cyan.600" color="#FFF" _hover={{ bg: "cyan.700" }} type="submit">Login</Button>
+              <Link href="/signup">
+                <Button w="fit-content" variant="link" fontWeight="light" color="cyan.600" _hover={{ color: "cyan.700", textDecor: "underline 2px" }}>
+                  Don't have an account? Sign Up
+                </Button>
+              </Link>
             </Stack>
 
             <Divider m="2rem 0" />

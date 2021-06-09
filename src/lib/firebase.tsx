@@ -16,6 +16,8 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
+firebase.auth.Auth.Persistence.LOCAL
+
 export default firebase;
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();

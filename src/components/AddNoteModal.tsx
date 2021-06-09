@@ -1,6 +1,8 @@
+import { v4 as uuid } from 'uuid'
+import { useForm } from 'react-hook-form';
 import { useNotes } from '../contexts/NotesContext';
 import { useModal } from '../contexts/ModalContext';
-import { useForm } from 'react-hook-form';
+import { Note } from './Note';
 import {
     Modal,
     ModalOverlay,
@@ -15,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 
 type Note = {
-    title: string,
+    question: string,
     content: string,
 }
 
@@ -23,10 +25,18 @@ export function AddNoteModal() {
 
     const { addNote } = useNotes();
     const { isOpen, handleCloseModal } = useModal();
-    const { register, handleSubmit, reset, formState } = useForm();
+    const { register, handleSubmit, reset, watch, formState } = useForm();
 
-    function onSubmit(data: Note) {
-        addNote(data);
+    const question = watch("question", "")
+    const content = watch("content", "")
+
+    function onSubmit({ question, content }: Note) {
+        const note = {
+            question,
+            content,
+            id: uuid(),
+        }
+        addNote(note);
         handleCloseModal();
         reset();
     }
@@ -38,15 +48,21 @@ export function AddNoteModal() {
                 <ModalHeader>Add New Note</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
+
+                    <Note
+                        question={question}
+                        content={content}
+                    />
+
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <Stack spacing="2rem" pb="2rem">
                             <Input
-                                {...register("title", {
+                                {...register("question", {
                                     required: true,
                                     minLength: 4,
                                 })}
                                 variant="filled"
-                                placeholder="Note title"
+                                placeholder="Question"
                             />
                             <Textarea
                                 {...register("content", {
@@ -54,7 +70,7 @@ export function AddNoteModal() {
                                     minLength: 12,
                                 })}
                                 variant="filled"
-                                placeholder="Note content"
+                                placeholder="Content (Answer)"
                                
                             />
                             <Button

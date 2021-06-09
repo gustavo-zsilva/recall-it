@@ -1,18 +1,19 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { useAuth } from "./AuthContext";
 import { useToast } from '@chakra-ui/react';
-import axios from 'axios';
+import { api } from '../services/api'
 
 export const NotesContext = createContext({} as NotesContextProps);
 
 type Note = {
-    title: string,
+    question: string,
     content: string,
+    id: string,
 }
 
 interface NotesContextProps {
     notes: Note[];
     addNote: (note: Note) => void;
+    reloadNotes: () => void;
 }
 
 interface NotesProviderProps {
@@ -23,7 +24,6 @@ interface NotesProviderProps {
 export function NotesProvider({ children, firestoreNotes }: NotesProviderProps) {
 
     const toast = useToast()
-    const { user } = useAuth();
     const [notes, setNotes] = useState([]);
 
     useEffect(() => {
@@ -31,9 +31,7 @@ export function NotesProvider({ children, firestoreNotes }: NotesProviderProps) 
     }, [])
 
     async function addNote(note: Note) {
-        const response = await axios.post('http://localhost:3000/api/notes',
-            { data: note },
-            { params: { uid: user.uid } });
+        const response = await api.post('/notes', { data: note });
         setNotes([...notes, note]);
 
         if (response.status === 201) {
@@ -55,11 +53,24 @@ export function NotesProvider({ children, firestoreNotes }: NotesProviderProps) 
         
     }
 
+    async function reloadNotes() {
+        const response = await api.get('/notes')
+        const notes = response.data;
+        setNotes(notes)
+
+        toast({
+            title: 'Reloaded your notes.',
+            position: 'top',
+            status: 'success',
+        })
+    }
+
     return (
         <NotesContext.Provider
             value={{
                 notes,
                 addNote,
+                reloadNotes,
             }}
         >
             {children}
