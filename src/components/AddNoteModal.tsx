@@ -34,7 +34,8 @@ export function AddNoteModal() {
         const note = {
             question,
             content,
-            id: uuid(),
+            uuid: uuid(),
+            historic: [],
         }
         addNote(note);
         handleCloseModal();

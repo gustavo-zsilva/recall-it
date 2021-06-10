@@ -4,7 +4,6 @@ import { GetServerSideProps } from 'next';
 import { NotesProvider } from '../contexts/NotesContext';
 import { ModalProvider } from '../contexts/ModalContext';
 
-import { AddNoteButton } from '../components/AddNoteButton';
 import { NoteList } from '../components/NoteList';
 import { Layout } from '../components/Layout';
 import { AddNoteModal } from '../components/AddNoteModal';
@@ -12,9 +11,16 @@ import { AddNoteModal } from '../components/AddNoteModal';
 import { parseCookies } from 'nookies';
 import { getAPIClient } from '../services/axios';
 
+type HistoricNode = {
+  answer: string,
+  isCorrect: boolean,
+}
+
 type Note = {
   question: string,
   content: string,
+  uuid: string,
+  historic: HistoricNode[],
 }
 
 interface HomeProps {
@@ -55,6 +61,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   const response = await apiClient.get('/notes');
   const notes = response.data;
+
+  console.log(notes)
+
 
   return {
     props: {

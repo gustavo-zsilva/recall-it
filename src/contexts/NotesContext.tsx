@@ -4,10 +4,16 @@ import { api } from '../services/api'
 
 export const NotesContext = createContext({} as NotesContextProps);
 
+type HistoricNode = {
+    answer: string,
+    isCorrect: boolean,
+}
+
 type Note = {
     question: string,
     content: string,
-    id: string,
+    uuid: string,
+    historic: HistoricNode[],
 }
 
 interface NotesContextProps {

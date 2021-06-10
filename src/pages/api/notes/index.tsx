@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     .collection('notes')
                     .get()
                 
-                const notes = notesSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                const notes = notesSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.data().id }));
 
                 res.status(201).json(notes);
             } catch (err) {

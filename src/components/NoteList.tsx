@@ -17,7 +17,7 @@ export function NoteList() {
             {notes.map(note => {
                 // const [isSelected, setIsSelected] = useState(false);
                 return (
-                    <Link href={`/${user.uid}/${note.id}`} key={note.id}>
+                    <Link href={`/${user?.uid}/${note.uuid}`} key={note.uuid}>
                         <Flex
                             bg={"gray.700"}
                             transition=".2s"

@@ -18,6 +18,7 @@ export const theme = {
             "html, body": {
                 fontFamily: 'Inter, Arial, Helvetica, sans-serif',
                 color: 'gray.700',
+                background: 'gray.050',
                 height: '100vh',
                 transition: '.2s',
             }
