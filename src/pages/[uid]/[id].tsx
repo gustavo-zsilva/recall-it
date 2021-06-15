@@ -6,10 +6,12 @@ import { firestore } from '../../lib/firebase'
 import { Layout } from '../../components/Layout'
 
 import { useForm } from 'react-hook-form'
+import Timer from 'react-compound-timer'
+import { v4 as uuid } from 'uuid'
 
 import { AiOutlineCheckSquare, AiOutlineCloseSquare } from 'react-icons/ai'
 import { AiOutlineSend, AiOutlineExclamationCircle, AiOutlineQuestionCircle } from 'react-icons/ai'
-import { Flex, Box, Text, Button, Input } from '@chakra-ui/react'
+import { Flex, Box, Text, Button, Input, ButtonGroup } from '@chakra-ui/react'
 import { api } from '../../services/api'
 
 type HistoricNode = {
@@ -29,7 +31,7 @@ interface QuestionProps {
 }
 
 type FormData = {
-    answer: string,
+    userAnswer: string,
 }
 
 export default function Question({ note }: QuestionProps) {
@@ -44,22 +46,30 @@ export default function Question({ note }: QuestionProps) {
         setHistoric(note.historic)
     }, [])
 
-    async function submitAnswer({ answer }: FormData) {
+    async function submitAnswer({ userAnswer }: FormData) {
 
         const response = note.content.trim().toLowerCase().split(' ').join('-')
-        const userAnswer = answer.trim().toLowerCase().split(' ').join('-')
+        const answer = userAnswer.trim().toLowerCase().split(' ').join('-')
 
         const notes = [...note.historic]
+        let newAnswer;
 
-        if (userAnswer === response) {
+        if (answer === response) {
+            newAnswer = {
+                answer,
+                isCorrect: true,
+                id: uuid(),
+            }
+
             setIsCorrect(true)
         } else {
-            setIsCorrect(false)
-        }
+            newAnswer = {
+                answer,
+                isCorrect: false,
+                id: uuid(),
+            }
 
-        const newAnswer = {
-            answer: userAnswer,
-            isCorrect,
+            setIsCorrect(false)
         }
 
         notes.push(newAnswer)
@@ -73,7 +83,19 @@ export default function Question({ note }: QuestionProps) {
             setIsAnswered(true)
             reset()
         } catch (err) {
-            console.error()
+            console.error(err)
+        }
+    }
+
+    async function handleSetSchedule(date: string) {
+
+        try {
+            await api.post('/schedule', {
+                data: date,
+                uuid: note.uuid,
+            })
+        } catch (err) {
+            console.error(err)
         }
     }
 
@@ -93,10 +115,14 @@ export default function Question({ note }: QuestionProps) {
                     borderRadius="1rem"
                     gridGap="1rem"
                 >
+                    
                     <Flex flexDir="column">
-                        <Flex>
+                        <Flex justifyContent="space-between">
                             <Text fontSize="1.4rem">Question:</Text>
-                            
+                            <Timer lastUnit="m">
+                                <Timer.Minutes />:
+                                <Timer.Seconds />
+                            </Timer>
                         </Flex>
                         <Text fontSize="2rem">{note.question}</Text>
                     </Flex>
@@ -123,7 +149,7 @@ export default function Question({ note }: QuestionProps) {
                     <form onSubmit={handleSubmit(submitAnswer)}>
                         <Flex gridGap="1rem" h="3rem">
                             <Input
-                                {...register("answer", {
+                                {...register("userAnswer", {
                                     required: true,
                                 })}
                                 variant="outline"
@@ -146,6 +172,23 @@ export default function Question({ note }: QuestionProps) {
                             </Button>
                         </Flex>
                     </form>
+
+                    {isAnswered && (
+                        <Flex flexDir="column" m="auto">
+                            <Text mb="1rem">How was the difficulty level of this question?</Text>
+                            <ButtonGroup spacing={0} justifyContent="center">
+                                <Button colorScheme="green" borderRadius=".2rem 0 0 .2rem" onClick={() => handleSetSchedule('easy')}>
+                                    Easy
+                                </Button>
+                                <Button colorScheme="yellow" color="#FFF" borderRadius="0" onClick={() => handleSetSchedule('medium')}>
+                                    Medium
+                                </Button>
+                                <Button colorScheme="red" borderRadius="0 .2rem .2rem 0" onClick={() => handleSetSchedule('hard')}>
+                                    Hard
+                                </Button>
+                            </ButtonGroup>
+                        </Flex>
+                    )}
                 </Flex>
                 
                 <Box
@@ -160,7 +203,13 @@ export default function Question({ note }: QuestionProps) {
                 >
                     {historic.map(node => {
                         return (
-                            <Box w="30px" h="30px" borderRadius=".1rem" bg={node.isCorrect ? 'green.200' : 'red.300'} />
+                            <Box
+                                key={node.id}
+                                w="30px"
+                                h="30px"
+                                borderRadius=".1rem"
+                                bg={node.isCorrect ? 'green.200' : 'red.300'}
+                            />
                         )
                     })}
                 </Box>

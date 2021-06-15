@@ -58,12 +58,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       }
     }
   }
-
+  
   const response = await apiClient.get('/notes');
   const notes = response.data;
 
-  console.log(notes)
-
+  console.log('INDEX NOTES: ', notes)
 
   return {
     props: {

@@ -1,24 +1,28 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { firestore } from '../../../lib/firebase'
+import firebase, { firestore } from "../../lib/firebase";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { method } = req
-    const { uuid, uid } = req.query
+    const { uid } = req.query
+    const { uuid } = req.body
+    const { 'Authorization': token } = req.headers
 
     switch (method) {
-        case 'PATCH':
+        case 'GET':
+            break
+
+        case 'POST':
             try {
-                
                 await firestore
                     .collection('users')
                     .doc(String(uid))
                     .collection('notes')
-                    .doc(String(uuid))
+                    .doc(uuid)
                     .update({
-                        historic: req.body.data,
+                        schedule: firebase.firestore.FieldValue.serverTimestamp()
                     })
 
-                res.status(201).json({ message: 'Document updated with success' })
+                res.status(201).json({ message: `Schedule set to ${req.body.data}` })
             } catch (err) {
                 res.status(500).json({ message: err.message })
             }

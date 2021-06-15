@@ -1,4 +1,4 @@
-import { firestore } from '../../../lib/firebase';
+import firebase, { firestore } from '../../../lib/firebase';
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -29,7 +29,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     .collection('users')
                     .doc(String(uid))
                     .collection('notes')
-                    .add(req.body.data)
+                    .doc(req.body.data.uuid)
+                    .set({
+                        ...req.body.data,
+                        schedule: firebase.firestore.FieldValue.serverTimestamp(),
+                    })
 
                 res.status(201).json({ message: 'Note saved with success!' });
             } catch (err) {
