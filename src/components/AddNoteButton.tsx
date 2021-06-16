@@ -1,6 +1,7 @@
 import { FiPlus } from 'react-icons/fi';
 import { Flex, Button } from '@chakra-ui/react';
 import { useModal } from '../contexts/ModalContext';
+import { AddNoteModal } from './AddNoteModal';
 
 export function AddNoteButton() {
 
@@ -19,6 +20,9 @@ export function AddNoteButton() {
             >
                 <FiPlus size={32} color="#FFF" />
             </Button>
+
+            <AddNoteModal />
+
         </Flex>
     )
 }

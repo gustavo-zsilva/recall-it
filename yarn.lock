@@ -2797,11 +2797,6 @@ react-clientside-effect@^1.2.2:
   dependencies:
     "@babel/runtime" "^7.12.13"
 
-react-compound-timer@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/react-compound-timer/-/react-compound-timer-1.2.0.tgz#52df2980dce0b63ddaf5718235a51188cb223d1d"
-  integrity sha512-BEFT0Z/+vusfAy4Ci1+G5lr8mI+dk3ddRJuu1DIYA5xGS+5P+M0o4krHmFMKgHuaIY9H3xx0KCvf3ilb1+HFWA==
-
 react-dom@17.0.2:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-17.0.2.tgz#ecffb6845e3ad8dbfcdc498f0d0a939736502c23"
@@ -2875,6 +2870,11 @@ react-style-singleton@^2.1.0:
     get-nonce "^1.0.0"
     invariant "^2.2.4"
     tslib "^1.0.0"
+
+react-timer-hook@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/react-timer-hook/-/react-timer-hook-3.0.3.tgz#b42bab3bf49322c378ad19587d14906f8af57ce8"
+  integrity sha512-2JdFvAKNi/7sW5NMrPPd06Yk4ky6W5OUmhsFInIKyqX7le3LdlN8aG2QTfX5nojkmcAXFmXhWI3EJSHQETg8qw==
 
 react@17.0.2:
   version "17.0.2"

@@ -23,7 +23,7 @@ type Note = {
 
 export function AddNoteModal() {
 
-    const { addNote } = useNotes();
+    const { addNote } = useNotes()
     const { isOpen, handleCloseModal } = useModal();
     const { register, handleSubmit, reset, watch, formState } = useForm();
 

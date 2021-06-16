@@ -37,8 +37,7 @@ export default function Home({ notes }: HomeProps) {
           </Head>
 
           <NoteList />
-
-          <AddNoteModal />
+          
         </Layout>
       </ModalProvider>
     </NotesProvider>

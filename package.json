@@ -17,10 +17,10 @@
     "next": "10.2.3",
     "nookies": "^2.5.2",
     "react": "17.0.2",
-    "react-compound-timer": "^1.2.0",
     "react-dom": "17.0.2",
     "react-hook-form": "^7.7.1",
     "react-icons": "^4.2.0",
+    "react-timer-hook": "^3.0.3",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

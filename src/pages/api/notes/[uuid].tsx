@@ -8,7 +8,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     switch (method) {
         case 'PATCH':
             try {
-                
                 await firestore
                     .collection('users')
                     .doc(String(uid))

@@ -18,6 +18,7 @@ export function Layout({ children }: LayoutProps) {
 
             <Navigation />
             <AddNoteButton />
+
         </Flex>
     )
 }
