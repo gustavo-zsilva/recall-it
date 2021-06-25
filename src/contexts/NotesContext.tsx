@@ -28,7 +28,7 @@ interface NotesProviderProps {
 }
 
 export function NotesProvider({ children, firestoreNotes }: NotesProviderProps) {
-
+    
     const toast = useToast()
     const [notes, setNotes] = useState([]);
 
@@ -82,8 +82,4 @@ export function NotesProvider({ children, firestoreNotes }: NotesProviderProps) 
             {children}
         </NotesContext.Provider>
     )
-}
-
-export function useNotes() {
-    return useContext(NotesContext);
 }

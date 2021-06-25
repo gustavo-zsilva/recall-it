@@ -6,7 +6,6 @@ import { ModalProvider } from '../contexts/ModalContext';
 
 import { NoteList } from '../components/NoteList';
 import { Layout } from '../components/Layout';
-import { AddNoteModal } from '../components/AddNoteModal';
 
 import { parseCookies } from 'nookies';
 import { getAPIClient } from '../services/axios';
@@ -49,10 +48,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const apiClient = getAPIClient(ctx);
   const { ['nextauth.token']: token } = parseCookies(ctx);
   
-  if (token === 'null') {
+  if (!token) {
     return {
       redirect: {
-        destination: '/signup',
+        destination: '/login',
         permanent: false,
       }
     }
@@ -60,8 +59,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   
   const response = await apiClient.get('/notes');
   const notes = response.data;
-
-  console.log('INDEX NOTES: ', notes)
 
   return {
     props: {

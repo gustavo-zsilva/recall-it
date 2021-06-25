@@ -1,6 +1,6 @@
 import { FiPlus } from 'react-icons/fi';
 import { Flex, Button } from '@chakra-ui/react';
-import { useModal } from '../contexts/ModalContext';
+import { useModal } from '../hooks/useModal';
 import { AddNoteModal } from './AddNoteModal';
 
 export function AddNoteButton() {

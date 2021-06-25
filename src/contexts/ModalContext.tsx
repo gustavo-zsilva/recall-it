@@ -37,7 +37,3 @@ export function ModalProvider({ children }: ModalProviderProps) {
         </ModalContext.Provider>
     )
 }
-
-export function useModal() {
-    return useContext(ModalContext);
-}

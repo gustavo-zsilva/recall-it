@@ -1,9 +1,8 @@
 import Link from 'next/link'
 
 import { Box, Text, Flex, Divider, Tag } from '@chakra-ui/react';
-import { useNotes } from '../contexts/NotesContext';
-import { Note } from './Note';
-import { useAuth } from '../contexts/AuthContext';
+import { useNotes } from '../hooks/useNotes';
+import { useAuth } from '../hooks/useAuth';
 
 export function NoteList() {
 

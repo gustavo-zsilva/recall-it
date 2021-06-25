@@ -18,13 +18,13 @@ import {
     MenuItem,
     MenuDivider,
 } from '@chakra-ui/react';
-import { useAuth } from '../contexts/AuthContext';
-import { useNotes } from '../contexts/NotesContext';
+import { useAuth } from '../hooks/useAuth'
+import { useNotes } from '../hooks/useNotes'
 
 export function Header() {
 
     const { user, isAuthenticated, isUserLoading, signOut } = useAuth();
-    const { reloadNotes } = useNotes()
+    const { reloadNotes } = useNotes();
     
     async function handleSignOut() {
         try {

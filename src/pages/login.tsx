@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { FiUser, FiKey } from 'react-icons/fi';
 
 import { Layout } from '../components/Layout';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { ProviderButtons } from '../components/ProviderButtons';
 
 import { useForm } from 'react-hook-form';
 
-import { Flex, Heading, Input, InputGroup, InputLeftElement, Button, Stack, Divider, useToast, toast } from '@chakra-ui/react';
+import { Flex, Heading, Input, InputGroup, InputLeftElement, Button, Stack, Divider, useToast } from '@chakra-ui/react';
 
 type LoginType = {
   email: string,
@@ -53,56 +53,54 @@ export default function Login() {
   }
 
   return (
-    <Layout>
+    <Flex gridGap="4rem" maxW="80rem" h="100vh" m="auto" justifyContent="center" alignItems="center">
+
       <Head>
         <title>Login | recall.it</title>
       </Head>
 
-      <Flex gridGap="4rem" m="0 auto">
+      <form onSubmit={handleSubmit(handleLogin)}>
+        <Flex flexDir="column" w="25rem">
+          <Heading fontFamily="Inter" mb="2rem">login</Heading>
+          <Stack spacing="2rem">
+            <InputGroup>
+              <InputLeftElement children={<FiUser size={24} color="#B1B0C1" />} />
+              <Input
+                {...register("email")}
+                variant="flushed"
+                placeholder="Your email"
+                type="text"
+                isRequired
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputLeftElement children={<FiKey size={24} color="#B1B0C1" />} />
+              <Input
+                {...register("password")}
+                variant="flushed"
+                placeholder="Your password"
+                type="password"
+                isRequired
+              />
+            </InputGroup>
+            <Button bg="cyan.600" color="#FFF" _hover={{ bg: "cyan.700" }} type="submit">Login</Button>
+            <Link href="/signup">
+              <Button w="fit-content" variant="link" fontWeight="light" color="cyan.600" _hover={{ color: "cyan.700", textDecor: "underline 2px" }}>
+                Don't have an account? Sign Up
+              </Button>
+            </Link>
+          </Stack>
 
-        <form onSubmit={handleSubmit(handleLogin)}>
-          <Flex flexDir="column" w="25rem">
-            <Heading fontFamily="Inter" mb="2rem">login</Heading>
-            <Stack spacing="2rem">
-              <InputGroup>
-                <InputLeftElement children={<FiUser size={24} color="#B1B0C1" />} />
-                <Input
-                  {...register("email")}
-                  variant="flushed"
-                  placeholder="Your email"
-                  type="text"
-                  isRequired
-                />
-              </InputGroup>
-              <InputGroup>
-                <InputLeftElement children={<FiKey size={24} color="#B1B0C1" />} />
-                <Input
-                  {...register("password")}
-                  variant="flushed"
-                  placeholder="Your password"
-                  type="password"
-                  isRequired
-                />
-              </InputGroup>
-              <Button bg="cyan.600" color="#FFF" _hover={{ bg: "cyan.700" }} type="submit">Login</Button>
-              <Link href="/signup">
-                <Button w="fit-content" variant="link" fontWeight="light" color="cyan.600" _hover={{ color: "cyan.700", textDecor: "underline 2px" }}>
-                  Don't have an account? Sign Up
-                </Button>
-              </Link>
-            </Stack>
+          <Divider m="2rem 0" />
 
-            <Divider m="2rem 0" />
-
-            <ProviderButtons />
-          </Flex>
-        </form>
-
-        <Flex>
-          <Image width={400} height={400} src="/assets/login.svg" alt="Login" />
+          <ProviderButtons />
         </Flex>
+      </form>
 
+      <Flex>
+        <Image width={400} height={400} src="/assets/login.svg" alt="Login" />
       </Flex>
-    </Layout>
+
+    </Flex>
   )
 }

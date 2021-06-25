@@ -4,7 +4,7 @@ import firebase, { firestore } from "../../lib/firebase";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { method } = req
     const { uid } = req.query
-    const { uuid } = req.body
+    const { uuid, schedule } = req.body
     const { 'Authorization': token } = req.headers
 
     switch (method) {
@@ -12,6 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             break
 
         case 'POST':
+            console.log()
             try {
                 await firestore
                     .collection('users')
@@ -19,10 +20,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     .collection('notes')
                     .doc(uuid)
                     .update({
-                        schedule: firebase.firestore.FieldValue.serverTimestamp()
+                        // ARRUMAR ISSO: TRANSFORMAR "schedule" EM UM OBJETO "Date" E SALVAR
+                        schedule,
                     })
 
-                res.status(201).json({ message: `Schedule set to ${req.body.data}` })
+                res.status(201).json({ message: `Schedule set succesfully` })
             } catch (err) {
                 res.status(500).json({ message: err.message })
             }

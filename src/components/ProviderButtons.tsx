@@ -4,7 +4,7 @@ import { AiFillGoogleCircle, AiFillFacebook, AiFillTwitterCircle, AiFillGithub }
 import { Flex, Button, useToast } from '@chakra-ui/react';
 
 import axios from 'axios';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 export function ProviderButtons() {
 

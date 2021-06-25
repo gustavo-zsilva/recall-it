@@ -1,5 +1,5 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { setCookie } from 'nookies';
+import { createContext, ReactNode, useEffect, useState } from "react";
+import { setCookie, destroyCookie } from 'nookies';
 import Router from 'next/router';
 import firebase, { auth } from '../lib/firebase';
 import { formatUser } from '../utils/formatUser';
@@ -71,14 +71,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             if (user) {
                 const token = await user.getIdToken();
-                setCookie(null, 'nextauth.token', token, { encode: value => value })
-                setCookie(null, 'nextauth.uid', user.uid, { encode: value => value })
+                setCookie(null, 'nextauth.token', token)
+                setCookie(null, 'nextauth.uid', user.uid)
                 return;
             }
-
+            
+            destroyCookie(null, 'nextauth.token')
+            destroyCookie(null, 'nextauth.uid')
             Router.push('/login')
-            setCookie(null, 'nextauth.token', null)
-            setCookie(null, 'nextauth.uid', null)
         })
 
         return () => {
@@ -104,6 +104,3 @@ export function AuthProvider({ children }: AuthProviderProps) {
     )
 }
 
-export function useAuth() {
-    return useContext(AuthContext);
-}

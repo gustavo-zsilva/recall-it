@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { GetStaticPaths, GetStaticProps } from 'next'
 
-import { firestore } from '../../lib/firebase'
+import firebase, { firestore } from '../../lib/firebase'
 import { Layout } from '../../components/Layout'
 
 import { useForm } from 'react-hook-form'
@@ -22,7 +22,7 @@ import { FiClock } from 'react-icons/fi'
 import { Flex, Box, Text, Button, Input, ButtonGroup, Divider } from '@chakra-ui/react'
 
 type HistoricNode = {
-    answer: string,
+    answer: string | null,
     isCorrect: boolean,
     finishTime: string,
     id: string,
@@ -44,7 +44,7 @@ interface QuestionProps {
 }
 
 type FormData = {
-    userAnswer: string,
+    answer: string,
 }
 
 export default function Question({ note }: QuestionProps) {
@@ -59,14 +59,17 @@ export default function Question({ note }: QuestionProps) {
         setHistoric(note.historic)
     }, [])
 
-    async function submitAnswer({ userAnswer }: FormData) {
-        const response = note.content.trim().toLowerCase().split(' ').join('-')
-        const answer = userAnswer.trim().toLowerCase().split(' ').join('-')
+    async function submitAnswer({ answer }: FormData) {
+        const response = note.content.trim().toLowerCase().split(' ')
+        const formattedAnswer = answer.trim().toLowerCase().split(' ')
 
-        const notesHistoric: HistoricNode[] = [...note.historic]
         let newAnswer: HistoricNode;
 
-        if (answer === response) {
+        if (
+            formattedAnswer.join('-') === response.join('-') ||
+            response.length === formattedAnswer.length + 1 ||
+            response.length === formattedAnswer.length - 1
+        ) {
             newAnswer = {
                 answer,
                 isCorrect: true,
@@ -84,32 +87,59 @@ export default function Question({ note }: QuestionProps) {
             setIsCorrect(false)
         }
 
-        notesHistoric.push(newAnswer)
+        const notesHistoric = [...historic, newAnswer]
         setHistoric([...historic, newAnswer])
 
-        try {
-            await api.patch(`/notes/${note.uuid}`, {
-                data: notesHistoric,
-            })
-    
-            setIsAnswered(true)
-            resetForm()
-            reset()
-            pause()
-        } catch (err) {
-            console.error(err)
-        }
+        await api.patch(`/notes/${note.uuid}`, {
+            data: notesHistoric,
+        })
+
+        setIsAnswered(true)
+        resetForm()
+        reset()
+        pause()
     }
 
-    async function handleSetSchedule(date: string) {
-        try {
-            await api.post('/schedule', {
-                data: date,
-                uuid: note.uuid,
-            })
-        } catch (err) {
-            console.error(err)
+    async function handleSetSchedule(difficulty: string) {
+
+        const date = new Date()
+
+        switch (difficulty) {
+            case 'easy':
+                date.setHours(date.getHours() + 24) // 1 day
+                break
+            case 'medium':
+                date.setHours(date.getHours() + 3) // 3 hours
+                break
+            case 'hard':
+                date.setMinutes(date.getMinutes() + 30) // 30 minutes
+                break
         }
+
+        const schedule = firebase.firestore.Timestamp.fromDate(date);
+
+        await api.post('/schedule', {
+            schedule,
+            uuid: note.uuid,
+        })
+    }
+
+    async function handleShowQuestionAnswer() {
+        const newAnswer = {
+            answer: null,
+            isCorrect: false,
+            finishTime: `${minutes}:${seconds}`,
+            id: uuid(),
+        }
+
+        const noteHistoric = [...historic, newAnswer]
+        setHistoric([...historic, newAnswer])
+
+        await api.patch(`/notes/${note.uuid}`, {
+            data: noteHistoric
+        })
+        setIsCorrect(false)
+        setIsAnswered(true)
     }
 
     return (
@@ -154,6 +184,7 @@ export default function Question({ note }: QuestionProps) {
                                     color="#FFF"
                                     _hover={{ bg: "red.500" }}
                                     leftIcon={<AiOutlineQuestionCircle size={32} color="#FFF" />}
+                                    onClick={handleShowQuestionAnswer}
                                 >
                                     Haven't got any answers?
                                 </Button>
@@ -163,7 +194,7 @@ export default function Question({ note }: QuestionProps) {
                         <form onSubmit={handleSubmit(submitAnswer)}>
                             <Flex gridGap="1rem" h="3rem">
                                 <Input
-                                    {...register("userAnswer", {
+                                    {...register("answer", {
                                         required: true,
                                     })}
                                     variant="outline"
@@ -171,6 +202,7 @@ export default function Question({ note }: QuestionProps) {
                                     h="auto"
                                     _focus={{ borderColor: "cyan.600" }}
                                     disabled={isAnswered}
+                                    autoComplete="off"
                                 />
                                 <Button
                                     type="submit"
@@ -205,6 +237,7 @@ export default function Question({ note }: QuestionProps) {
                     
                     {isAnswered && historic.map(node => (
                         <Flex
+                            key={node.id}
                             border="1px solid"
                             borderColor="cyan.600"
                             borderRadius="1rem"
@@ -262,7 +295,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 
     const { uid, id } = params
-    let note;
+    let note: Note;
 
     try {
         const noteSnapshot = await firestore

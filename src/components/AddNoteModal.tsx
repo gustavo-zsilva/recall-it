@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid'
 import { useForm } from 'react-hook-form';
-import { useNotes } from '../contexts/NotesContext';
-import { useModal } from '../contexts/ModalContext';
+import { useNotes } from '../hooks/useNotes';
+import { useModal } from '../hooks/useModal';
 import { Note } from './Note';
 import {
     Modal,
@@ -14,6 +14,10 @@ import {
     Input,
     Textarea,
     Button,
+    Flex,
+    Text,
+    Divider,
+    Tag,
 } from '@chakra-ui/react';
 
 type Note = {
@@ -50,10 +54,28 @@ export function AddNoteModal() {
                 <ModalCloseButton />
                 <ModalBody>
 
-                    <Note
-                        question={question}
-                        content={content}
-                    />
+                    <Flex
+                        bg={"gray.700"}
+                        transition=".2s"
+                        flexDir="column"
+                        borderRadius={4} 
+                        p={4}
+                        mb="2rem"
+                        color="#FFF"
+                        cursor="pointer"
+                    >
+                        <Text fontSize="1.8rem" fontWeight="bold">
+                            {question}
+                        </Text>
+                        <Divider mt={4} />
+                        <Text mt={4} bg="whiteAlpha.100" p={2} borderRadius={2} h="100%">
+                            {content}
+                        </Text>
+                        <Text mt={4}>
+                            By: {''}
+                            <Tag colorScheme="whiteAlpha">You</Tag>
+                        </Text>
+                    </Flex>
 
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <Stack spacing="2rem" pb="2rem">

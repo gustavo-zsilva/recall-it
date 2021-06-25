@@ -9,7 +9,7 @@ import { FiUser, FiKey } from 'react-icons/fi';
 
 import { Layout } from '../components/Layout';
 import { ProviderButtons } from '../components/ProviderButtons';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 import { useForm } from 'react-hook-form';
 
@@ -90,76 +90,74 @@ export default function Signup() {
   
 
   return (
-    <Layout>
+    <Flex gridGap="4rem" maxW="80rem" h="100vh" m="auto" justifyContent="center" alignItems="center">
+
       <Head>
         <title>Signup | recall.it</title>
       </Head>
 
-      <Flex gridGap="4rem" m="0 auto">
+      <form onSubmit={handleSubmit(handleSignup)}>
+        <Flex flexDir="column" w="25rem">
+          <Heading fontFamily="Inter" mb="2rem">signup</Heading>
+          <Stack spacing="2rem">
+            <InputGroup>
+              <InputLeftElement children={<FiUser size={24} color="#B1B0C1" />} />
+              <Input
+                {...register("email")}
+                variant="flushed"
+                placeholder="Your email"
+                type="email"
+                isRequired
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputLeftElement children={<FiUser size={24} color="#B1B0C1" />} />
+              <Input
+                {...register("username")}
+                variant="flushed"
+                placeholder="Your username"
+                type="text"
+                isRequired
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputLeftElement children={<FiKey size={24} color="#B1B0C1" />} />
+              <Input
+                {...register("password")}
+                variant="flushed"
+                placeholder="Your password"
+                type="password"
+                isRequired
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputLeftElement children={<FiKey size={24} color="#B1B0C1" />} />
+              <Input
+                {...register("passwordConfirm")}
+                variant="flushed"
+                placeholder="Confirm your password"
+                type="password"
+                isRequired
+              />
+            </InputGroup>
+            <Button bg="cyan.600" color="#FFF" _hover={{ bg: "cyan.700" }} type="submit">Signup</Button>
+            <Link href="/login">
+              <Button w="fit-content" variant="link" fontWeight="light" color="cyan.600" _hover={{ color: "cyan.700", textDecor: "underline 2px" }}>
+                Already have an account? Login
+              </Button>
+            </Link>
+          </Stack>
 
-        <form onSubmit={handleSubmit(handleSignup)}>
-          <Flex flexDir="column" w="25rem">
-            <Heading fontFamily="Inter" mb="2rem">signup</Heading>
-            <Stack spacing="2rem">
-              <InputGroup>
-                <InputLeftElement children={<FiUser size={24} color="#B1B0C1" />} />
-                <Input
-                  {...register("email")}
-                  variant="flushed"
-                  placeholder="Your email"
-                  type="email"
-                  isRequired
-                />
-              </InputGroup>
-              <InputGroup>
-                <InputLeftElement children={<FiUser size={24} color="#B1B0C1" />} />
-                <Input
-                  {...register("username")}
-                  variant="flushed"
-                  placeholder="Your username"
-                  type="text"
-                  isRequired
-                />
-              </InputGroup>
-              <InputGroup>
-                <InputLeftElement children={<FiKey size={24} color="#B1B0C1" />} />
-                <Input
-                  {...register("password")}
-                  variant="flushed"
-                  placeholder="Your password"
-                  type="password"
-                  isRequired
-                />
-              </InputGroup>
-              <InputGroup>
-                <InputLeftElement children={<FiKey size={24} color="#B1B0C1" />} />
-                <Input
-                  {...register("passwordConfirm")}
-                  variant="flushed"
-                  placeholder="Confirm your password"
-                  type="password"
-                  isRequired
-                />
-              </InputGroup>
-              <Button bg="cyan.600" color="#FFF" _hover={{ bg: "cyan.700" }} type="submit">Signup</Button>
-              <Link href="/login">
-                <Button w="fit-content" variant="link" fontWeight="light" color="cyan.600" _hover={{ color: "cyan.700", textDecor: "underline 2px" }}>
-                  Already have an account? Login
-                </Button>
-              </Link>
-            </Stack>
+          <Divider m="2rem 0" />
 
-            <Divider m="2rem 0" />
-
-            <ProviderButtons />
-          </Flex>
-        </form>
-
-        <Flex>
-          <Image width={400} height={400} src="/assets/study.svg" alt="Login" />
+          <ProviderButtons />
         </Flex>
+      </form>
 
+      <Flex>
+        <Image width={400} height={400} src="/assets/study.svg" alt="Login" />
       </Flex>
-    </Layout>
+
+    </Flex>
   )
 }
