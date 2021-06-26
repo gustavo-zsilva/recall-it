@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { firestore } from '../../../lib/firebase'
+import firebase, { firestore } from '../../../lib/firebase'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { method } = req
@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     .collection('notes')
                     .doc(String(uuid))
                     .update({
-                        historic: req.body.data,
+                        historic: firebase.firestore.FieldValue.arrayUnion(req.body.data),
                     })
 
                 res.status(201).json({ message: 'Document updated with success' })

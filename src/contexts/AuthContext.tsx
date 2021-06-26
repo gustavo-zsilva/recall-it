@@ -30,7 +30,7 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
 
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<User | null>(null);
     const [isUserLoading, setIsUserLoading] = useState(false);
     const isAuthenticated = !!user;
 

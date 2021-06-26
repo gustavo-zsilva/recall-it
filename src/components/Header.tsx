@@ -38,7 +38,7 @@ export function Header() {
         <Flex p="1rem 0" mb="1rem" justifyContent="space-between" alignItems="center">
             <Link href="/">
                 <Heading display="flex" color="gray.700" cursor="pointer">
-                    recall
+                    <span>recall</span>
                     <Text color="cyan.600">.it</Text>
                 </Heading>
             </Link>

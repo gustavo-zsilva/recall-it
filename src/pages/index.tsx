@@ -1,14 +1,13 @@
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 
-import { NotesProvider } from '../contexts/NotesContext';
-import { ModalProvider } from '../contexts/ModalContext';
-
 import { NoteList } from '../components/NoteList';
 import { Layout } from '../components/Layout';
 
 import { parseCookies } from 'nookies';
 import { getAPIClient } from '../services/axios';
+
+import { Flex, Text } from '@chakra-ui/react'
 
 type HistoricNode = {
   answer: string,
@@ -20,6 +19,7 @@ type Note = {
   content: string,
   uuid: string,
   historic: HistoricNode[],
+  // schedule: Date,
 }
 
 interface HomeProps {
@@ -28,18 +28,18 @@ interface HomeProps {
 
 export default function Home({ notes }: HomeProps) {
   return (
-    <NotesProvider firestoreNotes={notes}>
-      <ModalProvider>
-        <Layout>
-          <Head>
-            <title>recall.it</title>
-          </Head>
+    <Layout>
+      <Head>
+        <title>recall.it</title>
+      </Head>
 
-          <NoteList />
-          
-        </Layout>
-      </ModalProvider>
-    </NotesProvider>
+      <Flex mb="1rem" border="3px solid" borderColor="pink.200" w="fit-content" p=".2rem .8rem" borderRadius="9999px" borderBottomLeftRadius="0">
+        <Text fontSize="1.6rem" fontWeight="500" color="pink.200">Revise</Text>
+      </Flex>
+
+      <NoteList firebaseNotes={notes} />
+      
+    </Layout>
   ) 
 }
 

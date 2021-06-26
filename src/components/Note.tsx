@@ -6,6 +6,7 @@ import {
     Tag,
 } from '@chakra-ui/react'
 import { useAuth } from '../hooks/useAuth'
+import { useTheme } from '../hooks/useTheme'
 
 type Note = {
     question: string;
@@ -23,18 +24,19 @@ interface NoteProps {
 
 export function Note({ note }: NoteProps) {
     const { user } = useAuth()
+    const { theme } = useTheme()
 
     return (
         <Link href={`/${user?.uid}/${note.uuid}`}>
             <Flex
-                bg={"gray.700"}
+                bg={theme.bg}
                 transition=".2s"
                 flexDir="column"
-                borderRadius={4} 
-                p={4}
-                mb="2rem"
+                borderRadius=".4rem"
+                p="1rem"
                 color="#FFF"
                 cursor="pointer"
+                _hover={{ bg: "pink.300" }}
             >
                 <Text fontSize="1.8rem" fontWeight="bold">
                     {note.question}

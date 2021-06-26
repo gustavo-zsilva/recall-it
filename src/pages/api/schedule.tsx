@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import firebase, { firestore } from "../../lib/firebase";
+import { firestore } from "../../lib/firebase";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { method } = req
@@ -8,11 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { 'Authorization': token } = req.headers
 
     switch (method) {
-        case 'GET':
-            break
-
         case 'POST':
-            console.log()
             try {
                 await firestore
                     .collection('users')
@@ -20,7 +16,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     .collection('notes')
                     .doc(uuid)
                     .update({
-                        // ARRUMAR ISSO: TRANSFORMAR "schedule" EM UM OBJETO "Date" E SALVAR
                         schedule,
                     })
 

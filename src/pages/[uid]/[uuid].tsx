@@ -53,6 +53,7 @@ export default function Question({ note }: QuestionProps) {
     const { seconds, minutes, pause, reset } = useStopwatch({ autoStart: true })
     const [isCorrect, setIsCorrect] = useState(null)
     const [isAnswered, setIsAnswered] = useState(false)
+    const [hasSetSchedule, setHasSetSchedule] = useState(false)
     const [historic, setHistoric] = useState<HistoricNode[]>([])
 
     useEffect(() => {
@@ -66,9 +67,7 @@ export default function Question({ note }: QuestionProps) {
         let newAnswer: HistoricNode;
 
         if (
-            formattedAnswer.join('-') === response.join('-') ||
-            response.length === formattedAnswer.length + 1 ||
-            response.length === formattedAnswer.length - 1
+            formattedAnswer.join('-') === response.join('-')
         ) {
             newAnswer = {
                 answer,
@@ -87,13 +86,12 @@ export default function Question({ note }: QuestionProps) {
             setIsCorrect(false)
         }
 
-        const notesHistoric = [...historic, newAnswer]
         setHistoric([...historic, newAnswer])
-
+        
         await api.patch(`/notes/${note.uuid}`, {
-            data: notesHistoric,
+            data: newAnswer,
         })
-
+        
         setIsAnswered(true)
         resetForm()
         reset()
@@ -116,12 +114,14 @@ export default function Question({ note }: QuestionProps) {
                 break
         }
 
-        const schedule = firebase.firestore.Timestamp.fromDate(date);
+        const schedule = firebase.firestore.Timestamp.fromDate(date).toDate();
 
         await api.post('/schedule', {
             schedule,
             uuid: note.uuid,
         })
+
+        setHasSetSchedule(true)
     }
 
     async function handleShowQuestionAnswer() {
@@ -132,12 +132,12 @@ export default function Question({ note }: QuestionProps) {
             id: uuid(),
         }
 
-        const noteHistoric = [...historic, newAnswer]
         setHistoric([...historic, newAnswer])
-
+        
         await api.patch(`/notes/${note.uuid}`, {
-            data: noteHistoric
+            data: newAnswer,
         })
+
         setIsCorrect(false)
         setIsAnswered(true)
     }
@@ -217,7 +217,7 @@ export default function Question({ note }: QuestionProps) {
                             </Flex>
                         </form>
 
-                        {isAnswered && (
+                        {isAnswered && !hasSetSchedule && (
                             <Flex flexDir="column" m="auto">
                                 <Text mb="1rem">How was the difficulty level of this question?</Text>
                                 <ButtonGroup spacing={0} justifyContent="center">
@@ -235,23 +235,30 @@ export default function Question({ note }: QuestionProps) {
                         )}
                     </Flex>
                     
-                    {isAnswered && historic.map(node => (
-                        <Flex
-                            key={node.id}
-                            border="1px solid"
-                            borderColor="cyan.600"
-                            borderRadius="1rem"
-                            p="1rem"
-                            mt="2rem"
-                            justifyContent="space-between"
-                        >
-                            <Text>{node.answer}</Text>
-                            <Flex alignItems="center">
-                                <FiClock size={18} />
-                                <Text ml=".2rem">{node.finishTime}</Text>
-                            </Flex>
-                        </Flex>   
-                    ))}
+                    <Flex flexDir="column" gridGap="1rem" m="2rem 0">
+                        {isAnswered && historic.map(node => (
+                            <Flex
+                                key={node.id}
+                                bg="gray.100"
+                                borderRadius="1rem"
+                                p="1rem"
+                                justifyContent="space-between"
+                            >
+                                <Text
+                                    bg={node.isCorrect ? "green.100" : "red.200"}
+                                    fontStyle={node.answer ? '' : 'italic'}
+                                    p=".2rem .6rem"
+                                    borderRadius=".2rem"
+                                >
+                                    {node.answer ?? 'Question not answered.'}
+                                </Text>
+                                <Flex alignItems="center">
+                                    <FiClock size={18} />
+                                    <Text ml=".2rem">{node.finishTime}</Text>
+                                </Flex>
+                            </Flex>   
+                        ))}
+                    </Flex>
                     
                 </Flex>
                 
@@ -294,7 +301,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 
-    const { uid, id } = params
+    const { uid, uuid } = params
     let note: Note;
 
     try {
@@ -302,7 +309,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
             .collection('users')
             .doc(String(uid))
             .collection('notes')
-            .where('uuid', '==', String(id))
+            .where('uuid', '==', String(uuid))
             .get()
 
         note = JSON.parse(JSON.stringify(noteSnapshot.docs[0].data()))
